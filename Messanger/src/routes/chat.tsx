@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, set, DatabaseReference, onChildAdded, onValue, DataSnapshot, get } from "firebase/database";
-let colors = ["blue","red","green","purple","yellow"]
+let colors = ["red","green","purple","yellow"]
 let name = ""
 let temp = []
 let numMes = 0
 const color = colors[Math.round(Math.random()*colors.length-1)]
+let classy
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
@@ -47,40 +48,57 @@ set(ref(db, 'users/' + code + "/" + numMes), {
   console.log(error)
 });
 console.log(snapshot.val().users[code].length)
-numMes = snapshot.val().users[code].length
+numMes = snapshot.val().users[code].length-1
 // Initialize Firebase
-function Log({ log, color }: any) {
+function Log({ log }: any) {
   return (
     <>
-      {log.map((item: any, index: any) => 
-      (
-        <div key={index}>
-          <h1 className="text-left mb-0 ml-6">{item[0]}</h1>
-          <div className="selector border-l-8 h-8 mt-0 m-6 border-${color}-300">
-            <p className="text-left m-6 mt-0 ml-[10%]">{item[1]}</p>
+      {log.map((item: any, index: any) => {
+
+        classy =  "selector border-l-8 h-8 mt-0 m-6 border-"+item[2]+"-300"
+        console.log(item[2])
+        return (
+          <div key={index}>
+            <h1 className="text-left mb-0 ml-6">{item[0]}</h1>
+            <div className={classy}>
+              <p className="text-left m-6 mt-0 ml-[10%]">{item[1]}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </>
   );
 }
+
 
 function Chat() {
   const [popup, setPopup] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [log, setLog] = useState([["Admin", "Hello World", color]]);
+  const logsElement = useRef<HTMLDivElement>(null);
   function Change(data:any){
     temp = []
     data = snapshot.val()
-    console.log(snapshot.val())
-    console.log(code)
-    console.log(data.users[code][0].username)
-    for(let i = 0; i < data.users[code].length; i++){
+  
+    for(let i = 0; i <numMes; i++){
       temp.push([data.users[code][i].username, data.users[code][i].Message, data.users[code][i].Color])
     }
-    console.log(temp)
+    console.log("shot")
+    console.log(snapshot.val().users[code])
+    console.log(":snap")
     setLog(temp)
+    console.log(logsElement)
+
   }
+  async function update(){
+    snapshot = await get(ref(db));
+    Change("hi")
+  }
+  useEffect(() => {
+    if (logsElement.current) {
+      logsElement.current.scrollTop = logsElement.current.scrollHeight;
+    }
+  })
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if(popup){
@@ -91,7 +109,9 @@ function Chat() {
         Change(snapshot.val)
       }
       else{
-        snapshot = await get(ref(db));
+
+        console.log(numMes+" numMes")
+
 
         set(ref(db, 'users/'+code + "/" + numMes), {
           username: name,
@@ -99,10 +119,12 @@ function Chat() {
           Color: color
         })
         .then(() => {
+          console.log('-----------------------------------------------------------------')
           console.log(ref(db, 'users/'+code + "/" + numMes)+" HI")
-          numMes ++
+          update()
           console.log(numMes+"num");
-          Change(snapshot.val())
+          numMes  = numMes+1
+
         })
         .catch((error) => {
           // The write failed...
@@ -125,7 +147,7 @@ function Chat() {
         <></>
       )}
       <div className="transition-all">
-        <div className="h-[90%] transition-all overflow-x-hidden overflow-y-scroll">
+      <div id="logs" ref={logsElement} className="h-[90vh] overflow-x-hidden overflow-y-scroll">
           <Log log={log} />
         </div>
         <input
