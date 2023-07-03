@@ -35,6 +35,7 @@ else{
 // Create a new post reference with an auto-generated id
 const db = getDatabase(app);
 let snapshot = await get(ref(db));
+
 set(ref(db, 'users/' + code + "/" + numMes), {
   username: "Admin",
   Message: "Test",
@@ -43,7 +44,7 @@ set(ref(db, 'users/' + code + "/" + numMes), {
 .then(() => {
   console.log(ref(db, 'users/' + numMes)+" HI")
 })
-.catch((error) => {
+.catch((error: any) => {
   // The write failed...
   console.log(error)
 });
@@ -126,7 +127,7 @@ function Chat() {
           numMes  = numMes+1
 
         })
-        .catch((error) => {
+        .catch((error: any) => {
           // The write failed...
           console.log(error)
         });

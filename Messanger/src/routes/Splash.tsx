@@ -37,11 +37,13 @@ function Splash() {
   
   return (
     <>
-      <div className=" w-screen h-screen text-center bg-gradient-to-r from-blue to-orange">
+      <div className=" relative w-screen h-screen text-center">
         <h1 className="pt-[20rem] text-[4rem]">Join a Chat</h1>
-        <input onChange={(e) => txt = e.target.value} placeholder="Enter Your Code Here" className=" w-52 h-8 focus:bg-black focus:text-white focus:h-12 focus:w-72 m-2 border-2 border-black text-black text-center bg-white " type="text" />
-        <button   onClick={genCode} className=" h-8 w-52 transition-all m-2 text-grab text-center border-none bg-slate-800 rounded-full" >{code}</button>
-        <button   onClick={goto} className=" h-8 w-52 m-auto  transition-all block text-grab text-center border-none bg-slate-800 rounded-full" >Enter</button>
+        <div className="top-[50%] left-[50%]  translate-x-[-50%] absolute m-0 translate-y-[-50%]">
+          <input onChange={(e) => txt = e.target.value} placeholder=" Enter Your Code Here" className=" transition-all w-52 h-8 focus:bg-black focus:text-white focus:h-12 focus:w-72 border-2 border-black text-black text-center bg-white " type="text" />
+          <button   onClick={genCode} className=" transition-all  w-52 h-8 focus:bg-black focus:rounded-md focus:text-white focus:h-12 focus:w-72 m-2 border-2 border-black text-black text-center bg-white" >{code}</button>
+          <button   onClick={goto} className=" transition-all  w-52 h-8 focus:bg-black focus:text-white focus:h-12 focus:w-72 m-2 border-2 border-black text-black text-center bg-white" >Enter</button>
+        </div>
       </div>
     </>
   )
