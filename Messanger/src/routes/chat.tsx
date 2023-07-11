@@ -39,8 +39,11 @@ set(ref(db, 'users/'+code + "/" + numMes), {
 })
 
 // Create a new post reference with an auto-generated id
-
-let snapshot = await get(ref(db));
+let snapshot:any 
+async function  upSnap(){
+  snapshot = await get(ref(db));
+}
+upSnap()
 console.log(snapshot.val().users[code].length,"snap")
 console.log("snap")
 numMes = snapshot.val().users[code].length
