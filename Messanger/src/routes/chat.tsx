@@ -71,6 +71,7 @@ function Chat() {
   const [theChatlog, setLog] = useState([["Admin", "Hello World", color]]);
   const logsElement = useRef<HTMLDivElement>(null);
   function Change(data:any){
+    temp = theChatlog
     if(data.length != 0){
       temp = data.map((item: any) => [item.username, item.Message, item.Color]);
 
