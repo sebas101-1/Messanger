@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set, DatabaseReference, onChildAdded, onValue, DataSnapshot, get } from "firebase/database";
-let colors = ["red","green","purple","yellow"]
+import { getDatabase, ref, set, onValue, get } from "firebase/database";
+let colors = ["green","purple","yellow"]
 let name = ""
-let temp = []
+let temp:any = []
 let numMes = 0
 const color = colors[Math.round(Math.random()*colors.length-1)]
-let classy
+let classy: any
+let firstTime = true
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
@@ -30,76 +31,87 @@ if(code1 != null){
 else{
   code = "poor"
 }
-
+const db = getDatabase(app);
+set(ref(db, 'users/'+code + "/" + numMes), {
+  username: "probably not god",
+  Message: "Hello New World",
+  Color: "green"
+})
 
 // Create a new post reference with an auto-generated id
-const db = getDatabase(app);
+
 let snapshot = await get(ref(db));
+console.log(snapshot.val().users[code].length,"snap")
+console.log("snap")
+numMes = snapshot.val().users[code].length
 
-set(ref(db, 'users/' + code + "/" + numMes), {
-  username: "Admin",
-  Message: "Test",
-  Color: color
-})
-.then(() => {
-  console.log(ref(db, 'users/' + numMes)+" HI")
-})
-.catch((error: any) => {
-  // The write failed...
-  console.log(error)
-});
-console.log(snapshot.val().users[code].length)
-numMes = snapshot.val().users[code].length-1
 // Initialize Firebase
-function Log({ log }: any) {
+function Loging(props: any) {
   return (
-    <>
-      {log.map((item: any, index: any) => {
-
-        classy =  "selector border-l-8 h-8 mt-0 m-6 border-"+item[2]+"-300"
-        console.log(item[2])
+    <div>
+      {props.loggingThings.map((item: any, index: number) => {
         return (
-          <div key={index}>
+          <div key={index} className="hover:scale-105 hover:translate-x-20 transition-all">
             <h1 className="text-left mb-0 ml-6">{item[0]}</h1>
-            <div className={classy}>
+            <div className={`selector border-l-8 h-8 mt-0 m-6 border-${item[2]}-400`}>
               <p className="text-left m-6 mt-0 ml-[10%]">{item[1]}</p>
             </div>
           </div>
-        )
+        );
       })}
-    </>
+    </div>
   );
 }
+
 
 
 function Chat() {
   const [popup, setPopup] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [log, setLog] = useState([["Admin", "Hello World", color]]);
+  const [theChatlog, setLog] = useState([["Admin", "Hello World", color]]);
   const logsElement = useRef<HTMLDivElement>(null);
   function Change(data:any){
-    temp = []
-    data = snapshot.val()
-  
-    for(let i = 0; i <numMes; i++){
-      temp.push([data.users[code][i].username, data.users[code][i].Message, data.users[code][i].Color])
+    if(data.length != 0){
+      temp = data.map((item: any) => [item.username, item.Message, item.Color]);
+
+    setLog(temp);
     }
-    console.log("shot")
-    console.log(snapshot.val().users[code])
-    console.log(":snap")
-    setLog(temp)
-    console.log(logsElement)
+    else{
+      temp = [["Admin","Send A Message To Start", "pruple"]]
+    }
+    console.log(data);
 
   }
-  async function update(){
-    snapshot = await get(ref(db));
-    Change("hi")
+  async function update(snapshot:any){
+    if(classy == snapshot.length){
+      numMes = await snapshot.length
+      console.log(classy,"classy",snapshot.length,"snap")
+
+    }
+    else{
+      console.log(classy,"classy",snapshot.length,"snap","update fr")
+      numMes = await snapshot.length
+      Change(snapshot)
+
+      classy = snapshot.length
+
+    }
   }
   useEffect(() => {
     if (logsElement.current) {
       logsElement.current.scrollTop = logsElement.current.scrollHeight;
     }
   })
+  const starCountRef = ref(db, 'users/' + code);
+  onValue(starCountRef, (snapshot) => {
+    if(firstTime){
+      classy = snapshot.val().length
+      firstTime = false
+    }
+    console.log("update")
+    update(snapshot.val())
+  });
+
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if(popup){
@@ -111,7 +123,7 @@ function Chat() {
       }
       else{
 
-        console.log(numMes+" numMes")
+
 
 
         set(ref(db, 'users/'+code + "/" + numMes), {
@@ -119,50 +131,37 @@ function Chat() {
           Message: inputValue,
           Color: color
         })
-        .then(() => {
-          console.log('-----------------------------------------------------------------')
-          console.log(ref(db, 'users/'+code + "/" + numMes)+" HI")
-          update()
-          console.log(numMes+"num");
-          numMes  = numMes+1
-
-        })
-        .catch((error: any) => {
-          // The write failed...
-          console.log(error)
-        });
       }
       setInputValue("");
     }
   };
-
-  return (
-    <>
-      {popup ? (
-        <>
-          <div className="h-screen transition-all w-screen">
-            <h1 className="text-center transition-all text-3xl m-60">Set Your Name</h1>
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
-      <div className="transition-all">
-      <div id="logs" ref={logsElement} className="h-[90vh] overflow-x-hidden overflow-y-scroll">
-          <Log log={log} />
+    return (
+      <>
+        {popup ? (
+          <>
+            <div className="h-screen transition-all w-screen">
+              <h1 className="text-center transition-all text-3xl m-60">Set Your Name</h1>
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
+        <div className="transition-all">
+        <div id="logs" ref={logsElement} className="h-[90vh] overflow-x-hidden overflow-y-scroll">
+            <Loging help="jo" loggingThings={temp} />
         </div>
-        <input
-          id="bar"
-          type="text"
-          className="w-[80%] transition-all border-2 text-center border-black ml-[10%] fixed bottom-6"
-          value={inputValue}
-          onKeyDown={handleKeyPress}
-          onChange={(e) => setInputValue(e.target.value)}
+          <input
+            id="bar"
+            type="text"
+            className="w-[80%] transition-all border-2 text-center border-black ml-[10%] fixed bottom-6"
+            value={inputValue}
+            onKeyDown={handleKeyPress}
+            onChange={(e) => setInputValue(e.target.value)}
 
-      />
-    </div>
-    </>
-  );
+        />
+      </div>
+      </>
+    );
 }
 
 export default Chat;
