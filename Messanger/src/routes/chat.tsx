@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, onValue, get } from "firebase/database";
-let colors = ["green","purple","yellow"]
+let colors = ["green","purple","yellow","blue","red"]
 let name = ""
 let temp:any = []
 let numMes = 0
@@ -42,11 +42,13 @@ set(ref(db, 'users/'+code + "/" + numMes), {
 let snapshot:any 
 async function  upSnap(){
   snapshot = await get(ref(db));
+  console.log(snapshot.val().users[code],"snap")
+  console.log("snap")
+  numMes = snapshot.val().users[code].length
+  console.log("fin")
 }
 upSnap()
-console.log(snapshot.val().users[code].length,"snap")
-console.log("snap")
-numMes = snapshot.val().users[code].length
+
 
 // Initialize Firebase
 function Loging(props: any) {
@@ -54,9 +56,9 @@ function Loging(props: any) {
     <div>
       {props.loggingThings.map((item: any, index: number) => {
         return (
-          <div key={index} className="hover:scale-105 hover:translate-x-20 transition-all">
+          <div key={index} className="hover:scale-105  hover:translate-x-20 transition-all">
             <h1 className="text-left mb-0 ml-6">{item[0]}</h1>
-            <div className={`selector border-l-8 h-8 mt-0 m-6 border-${item[2]}-400`}>
+            <div className={`hover:bg-slate-400/[0.05] transition-all selector border-l-8 h-8 mt-0 m-6 border-${item[2]}-400`}>
               <p className="text-left m-6 mt-0 ml-[10%]">{item[1]}</p>
             </div>
           </div>
@@ -81,7 +83,7 @@ function Chat() {
     setLog(temp);
     }
     else{
-      temp = [["Admin","Send A Message To Start", "pruple"]]
+      temp = [["Admin","Send A Message To Start", "purple"]]
     }
     console.log(data);
 
