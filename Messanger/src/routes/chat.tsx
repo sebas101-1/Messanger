@@ -11,13 +11,14 @@ let firstTime = true
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
-  apiKey: "AIzaSyCz5GNgUPHRFBabDPCGTIgkouNUEpqgfAA",
-  authDomain: "chat-66f54.firebaseapp.com",
-  projectId: "chat-66f54",
-  storageBucket: "chat-66f54.appspot.com",
-  messagingSenderId: "283395189330",
-  appId: "1:283395189330:web:bf28845682429c950b0d8b",
-  measurementId: "G-K5N0EFV38L"
+  apiKey: "AIzaSyD4Yrc88HJRwhhiHxuTXEJ2dTOUmXutBkE",
+  authDomain: "chat-4da80.firebaseapp.com",
+  databaseURL: "https://chat-4da80-default-rtdb.firebaseio.com",
+  projectId: "chat-4da80",
+  storageBucket: "chat-4da80.appspot.com",
+  messagingSenderId: "819842679606",
+  appId: "1:819842679606:web:5bd63de9eea73b344b6997",
+  measurementId: "G-ZMX925ER21"
 };
 
 // Initialize Firebase
@@ -33,7 +34,7 @@ else{
 }
 const db = getDatabase(app);
 set(ref(db, 'users/'+code + "/" + numMes), {
-  username: "probably not god",
+  username: "seb",
   Message: "Hello New World",
   Color: "green"
 })
@@ -58,7 +59,8 @@ function Loging(props: any) {
         return (
           <div key={index} className="hover:scale-105  hover:translate-x-20 transition-all">
             <h1 className="text-left mb-0 ml-6">{item[0]}</h1>
-            <div className={`hover:bg-slate-400/[0.05] transition-all selector border-l-8 h-8 mt-0 m-6 border-${item[2]}-400`}>
+            <div className={`hover:bg-slate-400/[0.05] transition-all selector border-l-8 h-8 mt-0 m-6 border-${item[2]}-400`}
+            style={{borderColor : item[2]}}>
               <p className="text-left m-6 mt-0 ml-[10%]">{item[1]}</p>
             </div>
           </div>
